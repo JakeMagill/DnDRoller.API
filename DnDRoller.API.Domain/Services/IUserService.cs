@@ -1,4 +1,4 @@
-﻿using DnDRoller.API.Domain.ViewModels;
+﻿using DnDRoller.API.Domain.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +8,7 @@ namespace DnDRoller.API.Domain.Services
 {
     public interface IUserService
     {
-         Task<UserModel> Create(UserModel user);
-         Task<UserModel> Authenticate(string username, string password);
+         Task<UserDTO> Create(UserDTO user);
+         Task<UserDTO> Authenticate(string username, string password);
     }
 }

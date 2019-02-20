@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DnDRoller.API.Domain.Helpers;
 using DnDRoller.API.Domain.Services;
-using DnDRoller.API.Domain.ViewModels;
+using DnDRoller.API.Domain.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +25,7 @@ namespace DnDRoller.API.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("[Action]")]
-        public async Task<IActionResult> Create([FromBody]UserModel user)
+        public async Task<IActionResult> Create([FromBody]UserDTO user)
         {
             return StatusCode(201);
         }
@@ -58,7 +58,7 @@ namespace DnDRoller.API.Controllers
         [HttpPut]
         [AllowAnonymous]
         [Route("[Action]")]
-        public async Task<IActionResult> Update([FromBody]UserModel user)
+        public async Task<IActionResult> Update([FromBody]UserDTO user)
         {
             return StatusCode(200);
         }
