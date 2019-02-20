@@ -15,24 +15,16 @@ namespace DnDRoller.API.Domain.Services
             throw new NotImplementedException();
         }
 
-        public async Task<User> Create(UserDTO user)
+        public Task<User> Create(User user, string password)
         {
-            User createdUser = new User()
-            {
-                Firstname = user.Firstname, 
-                Lastname = user.Lastname,
-                Email = user.Email,
-                Username = user.Username,
-                Id = Guid.NewGuid()
-            };
-
+            user.Id = Guid.NewGuid();
             byte[] passwordHash, passwordSalt;
-            HashHelper.CreatePasswordHash(user.Password, out passwordHash, out passwordSalt);
+            HashHelper.CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
-            createdUser.PasswordHash = passwordHash;
-            createdUser.PasswordSalt = passwordSalt;
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
 
-            return createdUser;
+            return Task.FromResult(user);
         }
 
         public Task<bool> VerifyPassword(string password, out byte[] storedHash, out byte[] storedSalt)

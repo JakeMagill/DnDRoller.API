@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using AutoMapper;
 
 namespace DnDRoller.API
 {
@@ -29,6 +30,12 @@ namespace DnDRoller.API
         public void ConfigureServices(IServiceCollection services)
         {
             var key = System.Text.Encoding.ASCII.GetBytes("This is a secret key that will be used");
+            var mappingConfig = new MapperConfiguration(x => 
+            {
+                x.AddProfile(new UserMapper());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
 
             services.AddCors();
             services.AddAuthentication(x => 
@@ -49,6 +56,7 @@ namespace DnDRoller.API
                 };
             });
 
+            services.AddSingleton(mapper);
             services.AddScoped<IUserService, UserService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

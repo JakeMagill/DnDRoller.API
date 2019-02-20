@@ -7,6 +7,8 @@ using DnDRoller.API.Domain.Services;
 using DnDRoller.API.Domain.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using DnDRoller.API.Domain.Entities;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,19 +18,24 @@ namespace DnDRoller.API.Controllers
     public class UsersController : ControllerBase
     {
         private IUserService _userService;
+        private IMapper _mapper;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, IMapper mapper)
         {
             _userService = userService;
+            _mapper = mapper;
         }
 
         [HttpPost]
         [AllowAnonymous]
         [Route("[Action]")]
-        public async Task<IActionResult> Create([FromBody]UserDTO user)
+        public async Task<IActionResult> Create([FromBody]UserDTO userDTO)
         {
-            var returnUser = _userService.Create(user);
-            return StatusCode(201, returnUser);
+            User user = _mapper.Map<User>(userDTO);
+            var returnUser = await _userService.Create(user, userDTO.Password);
+            return StatusCode(201, new {
+                returnUser.Id
+            });
         }
 
         [HttpPost]
@@ -36,14 +43,14 @@ namespace DnDRoller.API.Controllers
         [Route("[Action]")]
         public async Task<IActionResult> Authenticate([FromBody]string username, string password)
         {
-            var user = _userService.Authenticate(username, password);
+            var user = await _userService.Authenticate(username, password);
 
             if(user == null)
             {
                 return BadRequest(new {message = "Username or Password incorrect"});
             }
             
-            return Ok(user);
+            return Ok();
         }
 
         [HttpGet]
