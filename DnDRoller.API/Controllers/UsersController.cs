@@ -27,7 +27,8 @@ namespace DnDRoller.API.Controllers
         [Route("[Action]")]
         public async Task<IActionResult> Create([FromBody]UserDTO user)
         {
-            return StatusCode(201);
+            var returnUser = _userService.Create(user);
+            return StatusCode(201, returnUser);
         }
 
         [HttpPost]
