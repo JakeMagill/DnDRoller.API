@@ -15,11 +15,11 @@ namespace DnDRoller.API.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private IUserService _service;
+        private IUserService _userService;
 
-        public UsersController(IUserService service)
+        public UsersController(IUserService userService)
         {
-            _service = service;
+            _userService = userService;
         }
 
         [HttpPost]
@@ -35,8 +35,14 @@ namespace DnDRoller.API.Controllers
         [Route("[Action]")]
         public async Task<IActionResult> Authenticate([FromBody]string username, string password)
         {
+            var user = _userService.Authenticate(username, password);
 
-            return StatusCode(200, "From Auth");
+            if(user == null)
+            {
+                return BadRequest(new {message = "Username or Password incorrect"});
+            }
+            
+            return Ok(user);
         }
 
         [HttpGet]

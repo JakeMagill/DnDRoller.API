@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DnDRoller.API.Domain.Helpers;
 using DnDRoller.API.Domain.DTOs;
+using DnDRoller.API.Domain.Entities;
 
 namespace DnDRoller.API.Domain.Services
 {
@@ -14,12 +15,29 @@ namespace DnDRoller.API.Domain.Services
             throw new NotImplementedException();
         }
 
-        public async Task<UserDTO> Create(UserDTO user)
+        public async Task<User> Create(UserDTO user)
         {
-            //Async over sync?
-            user.Password = await Task.Run(() => HashHelper.HashPassword(user.Password));
+            User createdUser = new User()
+            {
+                Firstname = user.Firstname, 
+                Lastname = user.Lastname,
+                Email = user.Email,
+                Username = user.Username,
+                Id = Guid.NewGuid()
+            };
 
-            return user;
+            byte[] passwordHash, passwordSalt;
+            HashHelper.CreatePasswordHash(user.Password, out passwordHash, out passwordSalt);
+
+            createdUser.PasswordHash = passwordHash;
+            createdUser.PasswordSalt = passwordSalt;
+
+            return createdUser;
+        }
+
+        public Task<bool> VerifyPassword(string password, out byte[] storedHash, out byte[] storedSalt)
+        {
+            throw new NotImplementedException();
         }
     }
 }
