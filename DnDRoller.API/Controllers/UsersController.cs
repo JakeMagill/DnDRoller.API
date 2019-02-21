@@ -33,6 +33,12 @@ namespace DnDRoller.API.Controllers
         {
             User user = _mapper.Map<User>(userDTO);
             var returnUser = await _userService.Create(user, userDTO.Password);
+
+            if(returnUser == null)
+            {
+                return BadRequest("Failed to create user");
+            }
+
             return StatusCode(201, new {
                 returnUser.Id
             });

@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DnDRoller.API.Domain.Services;
+﻿using DnDRoller.API.Domain.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using DnDRoller.API.Infrastructure.Contexts;
+using DnDRoller.API.Domain.Repositories;
+using DnDRoller.API.Infrastructure.Repositories;
 
 namespace DnDRoller.API
 {
@@ -29,6 +26,7 @@ namespace DnDRoller.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connection = "Server=tcp:pazzda.database.windows.net,1433;Initial Catalog=DnDRoller;Persist Security Info=False;User ID=jake.magill;Password=Chelsea18!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
             var key = System.Text.Encoding.ASCII.GetBytes("This is a secret key that will be used");
             var mappingConfig = new MapperConfiguration(x => 
             {
@@ -56,8 +54,12 @@ namespace DnDRoller.API
                 };
             });
 
+            services.AddDbContext<UserContext>(options =>
+                options.UseSqlServer(connection, x => x.MigrationsAssembly("DnDRoller.API.Infrastructure")));
+
             services.AddSingleton(mapper);
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 

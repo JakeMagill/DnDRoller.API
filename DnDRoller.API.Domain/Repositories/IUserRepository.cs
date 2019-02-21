@@ -2,7 +2,10 @@ using System;
 using System.Threading.Tasks;
 using DnDRoller.API.Domain.Entities;
 
-public interface IUserRepository
+namespace DnDRoller.API.Domain.Repositories
 {
-    Task<bool> CreateUser(User user);
+    public interface IUserRepository
+    {
+        Task<bool> CreateUser(User user);
+    }
 }
