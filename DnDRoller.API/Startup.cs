@@ -1,16 +1,17 @@
-﻿using DnDRoller.API.Domain.Services;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+using DnDRoller.API.Domain.Services;
 using DnDRoller.API.Infrastructure.Contexts;
 using DnDRoller.API.Domain.Repositories;
 using DnDRoller.API.Infrastructure.Repositories;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace DnDRoller.API
 {
@@ -35,7 +36,10 @@ namespace DnDRoller.API
 
             IMapper mapper = mappingConfig.CreateMapper();
 
+            //Adding CORS
             services.AddCors();
+
+            //Adding Auth
             services.AddAuthentication(x => 
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -54,6 +58,14 @@ namespace DnDRoller.API
                 };
             });
 
+            //Adding Swagger
+            services.AddSwaggerGen(x =>
+            {
+                x.SwaggerDoc("v1", new Info { Title = "DnDRoller API", Version = "v1" });
+            });
+
+
+            //Adding DbContext
             services.AddDbContext<UserContext>(options =>
                 options.UseSqlServer(connection, x => x.MigrationsAssembly("DnDRoller.API.Infrastructure")));
 
@@ -69,6 +81,13 @@ namespace DnDRoller.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                //Use swagger if in a dev environment
+                app.UseSwagger();
+                app.UseSwaggerUI(x =>
+                {
+                    x.SwaggerEndpoint("./v1/swagger.json", "DnDRoller API V1");
+                });
             }
 
             app.UseCors(x => x
