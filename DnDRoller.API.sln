@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnDRoller.API.Infrastructur
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnDRoller.API.Tests", "DnDTest.API.Tests\DnDRoller.API.Tests.csproj", "{365B0D5C-277E-4A77-96EF-BD54D9E136EB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DnDRoller.API.Application", "DnDRoller.API.Application\DnDRoller.API.Application.csproj", "{0968791B-9E05-4960-9F93-D5D1FC131EE2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{365B0D5C-277E-4A77-96EF-BD54D9E136EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{365B0D5C-277E-4A77-96EF-BD54D9E136EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{365B0D5C-277E-4A77-96EF-BD54D9E136EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0968791B-9E05-4960-9F93-D5D1FC131EE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0968791B-9E05-4960-9F93-D5D1FC131EE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0968791B-9E05-4960-9F93-D5D1FC131EE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0968791B-9E05-4960-9F93-D5D1FC131EE2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

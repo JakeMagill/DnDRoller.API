@@ -6,6 +6,9 @@ using DnDRoller.API.Domain.Helpers;
 using DnDRoller.API.Domain.DTOs;
 using DnDRoller.API.Domain.Entities;
 using DnDRoller.API.Domain.Repositories;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace DnDRoller.API.Domain.Services
 {
@@ -18,9 +21,37 @@ namespace DnDRoller.API.Domain.Services
             _repository = repository;
         }
 
-        public Task<UserDTO> Authenticate(string username, string password)
+        public async Task<User> Authenticate(string username, string password)
         {
-            throw new NotImplementedException();
+            User returnUser = await _repository.GetUserByUsernameForLogin(username);
+
+            if (returnUser == null)
+            {
+                throw new Exception();
+            }
+
+            if (!HashHelper.VerifyPasswordHash(password, returnUser.PasswordHash, returnUser.PasswordSalt))
+            {
+                throw new Exception();
+            }
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("This is a secret and all that stuff");
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, returnUser.Id.ToString())
+                }),
+                Expires = DateTime.Now.AddDays(1), 
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            
+
+
+            return returnUser;
         }
 
         public async Task<User> Create(User user, string password)

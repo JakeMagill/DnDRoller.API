@@ -7,6 +7,7 @@ using DnDRoller.API.Domain.Entities;
 using DnDRoller.API.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using DnDRoller.API.Infrastructure.Contexts;
+using System.Linq;
 
 namespace DnDRoller.API.Infrastructure.Repositories
 {
@@ -32,6 +33,18 @@ namespace DnDRoller.API.Infrastructure.Repositories
             {
                 return false;
             }
+        }
+
+        public async Task<User> GetUserByUsernameForLogin(string username)
+        {
+            var returnUser = _context.Users.Where(x => x.Username.Equals(username)).Single();
+            
+            if(returnUser == null)
+            {
+                throw new Exception();
+            }
+
+            return returnUser as User;
         }
     }
 }

@@ -47,16 +47,18 @@ namespace DnDRoller.API.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("[Action]")]
-        public async Task<IActionResult> Authenticate([FromBody]string username, string password)
+        public async Task<IActionResult> Authenticate([FromHeader]string username, [FromHeader]string password)
         {
-            var user = await _userService.Authenticate(username, password);
+            var returnUser = await _userService.Authenticate(username, password);
 
-            if(user == null)
+            if(returnUser == null)
             {
                 return BadRequest(new {message = "Username or Password incorrect"});
             }
             
-            return Ok();
+            return StatusCode(201, new {
+                returnUser.Id
+            });
         }
 
         [HttpGet]

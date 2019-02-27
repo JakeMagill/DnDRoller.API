@@ -10,7 +10,7 @@ namespace DnDRoller.API.Domain.Services
     public interface IUserService
     {
          Task<User> Create(User user, string password);
-         Task<UserDTO> Authenticate(string username, string password);
+         Task<User> Authenticate(string username, string password);
          Task<bool> VerifyPassword(string password, out byte[] storedHash, out byte[] storedSalt);
     }
 }
