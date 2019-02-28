@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using DnDRoller.API.Domain.Helpers;
-using DnDRoller.API.Domain.Services;
-using DnDRoller.API.Domain.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
-using DnDRoller.API.Domain.Entities;
+using DnDRoller.API.Application.Interfaces;
+using DnDRoller.API.Application.DTOs;
+
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -31,8 +28,7 @@ namespace DnDRoller.API.Controllers
         [Route("[Action]")]
         public async Task<IActionResult> Create([FromBody]UserDTO userDTO)
         {
-            User user = _mapper.Map<User>(userDTO);
-            var returnUser = await _userService.Create(user, userDTO.Password);
+            var returnUser = await _userService.Create(userDTO);
 
             if(returnUser == null)
             {

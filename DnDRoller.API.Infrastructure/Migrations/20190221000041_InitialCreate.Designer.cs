@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DnDRoller.API.Infrastructure.Migrations
 {
-    [DbContext(typeof(UserContext))]
+    [DbContext(typeof(DatabaseService))]
     [Migration("20190221000041_InitialCreate")]
     partial class InitialCreate
     {

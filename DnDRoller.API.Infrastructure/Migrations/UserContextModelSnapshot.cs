@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DnDRoller.API.Infrastructure.Migrations
 {
-    [DbContext(typeof(UserContext))]
+    [DbContext(typeof(DatabaseService))]
     partial class UserContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

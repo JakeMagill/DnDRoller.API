@@ -2,46 +2,62 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DnDRoller.API.Domain.Services;
 using DnDRoller.API.Tests.ObjectMothers;
 using DnDRoller.API.Infrastructure.Contexts;
-using DnDRoller.API.Infrastructure.Repositories;
+using DnDRoller.API.Application.Services;
+using DnDRoller.API.Application.Interfaces;
+using DnDRoller.API.Application.Mappers;
+using System.Threading.Tasks;
+using Moq;
+using AutoMapper;
 
 namespace DnDRoller.API.Tests.IntegrationTests
 {
     [TestClass]
     public class UserTests
     {
-        [TestMethod]
-        public async void Create_New_User_Using_Regular_User()
+        private Mapper mapper;
+        dynamic options;
+
+        [TestInitialize]
+        public void Initalize()
         {
+            var mockMapper = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new UserMapper());
+            });
 
-            //Arrange - Set up the in memory context options and test user profile
-            var userProfile = UserObjectMother.CreateBasicUser();
-            string userPassword = "TestPassword";
+            mapper = (Mapper)mockMapper.CreateMapper();
 
-            var options = new DbContextOptionsBuilder<UserContext>()
+            options = new DbContextOptionsBuilder<DatabaseService>()
                                       .UseInMemoryDatabase(Guid.NewGuid().ToString())
                                       .Options;
+        }
+
+        [TestMethod]
+        public async Task CreateNewRegularUser()
+        {
+            //Arrange - Set up the in memory context options and test user profile
+            var userProfile = UserObjectMother.CreateBasicUser();
 
             //Act - Insert all of the seed data
-            using (UserContext context = new UserContext(options))
+            using (DatabaseService context = new DatabaseService(options))
             {
-                UserService service = new UserService(new UserRepository(context));
-                await service.Create(userProfile, userPassword);
-            }
+                UserService service = new UserService(mapper, context);
 
-            //Assert - Clean instance of the context to run the tests
-            using (UserContext context = new UserContext(options))
-            {
-                var returnUser = context.Users
-                                    .Where(x => x.Id == userProfile.Id)
+                var returnUser = await service.Create(userProfile);
+
+                var dbUser = context.Users
+                                    .Where(x => x.Id == returnUser.Id)
                                     .FirstOrDefault();
 
-                Assert.IsNotNull(returnUser);
-                Assert.AreEqual(userProfile.Firstname, returnUser.Firstname);
-                Assert.AreEqual(userProfile.Email, returnUser.Email);
+                //Assert
+                Assert.IsNotNull(dbUser);
+                Assert.AreEqual(userProfile.Firstname, dbUser.Firstname);
+                Assert.AreEqual(userProfile.Email, dbUser.Email);
             }
+
         }
     }
+
 }

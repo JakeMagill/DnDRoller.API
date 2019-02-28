@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DnDRoller.API.Domain\DnDRoller.API.Domain.csproj" />
+    <ProjectReference Include="..\DnDRoller.API.Application\DnDRoller.API.Application.csproj" />
     <ProjectReference Include="..\DnDRoller.API.Infrastructure\DnDRoller.API.Infrastructure.csproj" />
   </ItemGroup>
 

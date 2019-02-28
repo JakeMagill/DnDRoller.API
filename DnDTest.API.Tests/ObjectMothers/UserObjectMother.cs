@@ -1,11 +1,12 @@
-﻿using DnDRoller.API.Domain.Entities;
+﻿using DnDRoller.API.Application.DTOs;
+using DnDRoller.API.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace DnDRoller.API.Tests.ObjectMothers
 {
-    public class  UserObjectMother : User
+    public class  UserObjectMother : UserDTO
     {
         public static UserObjectMother CreateBasicUser()
         {
@@ -14,8 +15,8 @@ namespace DnDRoller.API.Tests.ObjectMothers
                 Firstname = "Tester",
                 Lastname = "Tester",
                 Email = "Test@Test.com",
-                Id = Guid.NewGuid(),
-                Username = "TestUsername"
+                Username = "TestUsername",
+                Password = "TestPassword"
             };
 
             return returnUser;

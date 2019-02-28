@@ -1,12 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace DnDRoller.API.Domain.Helpers
+namespace DnDRoller.API.Application.Helpers
 {
     public static class HashHelper
     {
+        /// <summary>
+        ///     Created new hashed and salted password to be stored in the database
+        /// </summary>
+        /// <param name="password">Entered password</param>
+        /// <param name="passwordHash">Hash that will created here</param>
+        /// <param name="passwordSalt">Salt that will created here</param>
         public static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             if(password == null)
@@ -26,6 +31,13 @@ namespace DnDRoller.API.Domain.Helpers
             }
         }
 
+        /// <summary>
+        ///     Checks if the entered password is the same as the stored one
+        /// </summary>
+        /// <param name="password">users password</param>
+        /// <param name="storedHash">users stored hash value</param>
+        /// <param name="storedSalt">users stored salt value</param>
+        /// <returns>true if password hash matches stored</returns>
         public static bool VerifyPasswordHash(string password, byte [] storedHash, byte [] storedSalt)
         {
             if (password == null)

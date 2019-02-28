@@ -1,29 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using DnDRoller.API.Domain.Helpers;
-using DnDRoller.API.Domain.DTOs;
 using DnDRoller.API.Domain.Entities;
-using DnDRoller.API.Domain.Repositories;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using DnDRoller.API.Application.Helpers;
+using DnDRoller.API.Application.DTOs;
+using AutoMapper;
+using DnDRoller.API.Application.Interfaces;
 
-namespace DnDRoller.API.Domain.Services
+namespace DnDRoller.API.Application.Services
 {
     public class UserService : IUserService
     {
-        private IUserRepository _repository;
+        private IMapper _mapper;
+        private IDatabaseService _databaseService;
 
-        public UserService(IUserRepository repository)
-        {
-            _repository = repository;
+        public UserService(IMapper mapper, IDatabaseService databaseService)
+        { 
+            _mapper = mapper;
+            _databaseService = databaseService;
         }
 
         public async Task<User> Authenticate(string username, string password)
         {
-            User returnUser = await _repository.GetUserByUsernameForLogin(username);
+            User returnUser = await _databaseService.Users.FindAsync(username);
 
             if (returnUser == null)
             {
@@ -49,31 +51,25 @@ namespace DnDRoller.API.Domain.Services
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             
-
-
             return returnUser;
         }
 
-        public async Task<User> Create(User user, string password)
+        public async Task<User> Create(UserDTO dto)
         {
-            user.Id = Guid.NewGuid();
             byte[] passwordHash, passwordSalt;
-            HashHelper.CreatePasswordHash(password, out passwordHash, out passwordSalt);
+            User user = _mapper.Map<User>(dto);
+
+            HashHelper.CreatePasswordHash(dto.Password, out passwordHash, out passwordSalt);
 
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
 
-            if (await _repository.CreateUser(user))
-            {
-                return user;
-            }
+            user.SetInitiallDefaults();
 
-            return null;
-        }
+            _databaseService.Users.Add(user);
+            _databaseService.Save();
 
-        public Task<bool> VerifyPassword(string password, out byte[] storedHash, out byte[] storedSalt)
-        {
-            throw new NotImplementedException();
+            return user;
         }
     }
 }

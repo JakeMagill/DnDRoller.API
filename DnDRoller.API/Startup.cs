@@ -7,11 +7,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using DnDRoller.API.Domain.Services;
 using DnDRoller.API.Infrastructure.Contexts;
-using DnDRoller.API.Domain.Repositories;
-using DnDRoller.API.Infrastructure.Repositories;
 using Swashbuckle.AspNetCore.Swagger;
+using DnDRoller.API.Application.Interfaces;
+using DnDRoller.API.Application.Services;
+using DnDRoller.API.Application.Mappers;
 
 namespace DnDRoller.API
 {
@@ -66,12 +66,12 @@ namespace DnDRoller.API
 
 
             //Adding DbContext
-            services.AddDbContext<UserContext>(options =>
+            services.AddDbContext<DatabaseService>(options =>
                 options.UseSqlServer(connection, x => x.MigrationsAssembly("DnDRoller.API.Infrastructure")));
 
             services.AddSingleton(mapper);
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IDatabaseService, DatabaseService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
