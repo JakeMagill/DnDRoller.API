@@ -8,6 +8,21 @@ namespace DnDRoller.API.Tests.ObjectMothers
 {
     public class  UserObjectMother : UserDTO
     {
+        public UserObjectMother()
+        {
+
+        }
+
+        public UserObjectMother(string firstName, string lastName, string email, string username, string password)
+        {
+            this.Firstname = firstName;
+            this.Id = Guid.NewGuid();
+            this.Lastname = lastName;
+            this.Password = password;
+            this.Email = email;
+            this.Username = username;
+        }
+
         public static UserObjectMother CreateBasicUser()
         {
             UserObjectMother returnUser = new UserObjectMother

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens;
+using System;
 
 namespace DnDRoller.API.Application.DTOs
 {
@@ -15,5 +16,7 @@ namespace DnDRoller.API.Application.DTOs
         public string Username { get; set; }
 
         public string Password { get; set; }
+
+        public string token { get; set; }
     }
 }

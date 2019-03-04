@@ -1,56 +1,45 @@
 ﻿using System;
-using System.Text;
 using System.Threading.Tasks;
 using DnDRoller.API.Domain.Entities;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
 using DnDRoller.API.Application.Helpers;
 using DnDRoller.API.Application.DTOs;
 using AutoMapper;
 using DnDRoller.API.Application.Interfaces;
+using System.Linq;
 
 namespace DnDRoller.API.Application.Services
 {
     public class UserService : IUserService
     {
-        private IMapper _mapper;
-        private IDatabaseService _databaseService;
+        private readonly IMapper _mapper;
+        private readonly IDatabaseService _databaseService;
+        private readonly ITokenService _tokenService;
 
-        public UserService(IMapper mapper, IDatabaseService databaseService)
-        { 
+        public UserService(IMapper mapper, IDatabaseService databaseService, ITokenService tokenService)
+        {
             _mapper = mapper;
             _databaseService = databaseService;
+            _tokenService = tokenService;
         }
 
-        public async Task<User> Authenticate(string username, string password)
+        public async Task<UserDTO> Authenticate(string username, string password)
         {
-            User returnUser = await _databaseService.Users.FindAsync(username);
+            User user =  _databaseService.Users.Where(u => u.Username.Equals(username)).Single();
 
-            if (returnUser == null)
+            if (user == null)
             {
                 throw new Exception();
             }
 
-            if (!HashHelper.VerifyPasswordHash(password, returnUser.PasswordHash, returnUser.PasswordSalt))
+            if (!HashHelper.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
             {
                 throw new Exception();
             }
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("This is a secret and all that stuff");
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, returnUser.Id.ToString())
-                }),
-                Expires = DateTime.Now.AddDays(1), 
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
+            UserDTO returnUser = _mapper.Map<UserDTO>(user);
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            
+            returnUser.token = await _tokenService.CreateJWTToken(returnUser.Username);
+
             return returnUser;
         }
 
@@ -66,7 +55,7 @@ namespace DnDRoller.API.Application.Services
 
             user.SetInitiallDefaults();
 
-            _databaseService.Users.Add(user);
+            await _databaseService.Users.AddAsync(user);
             _databaseService.Save();
 
             return user;

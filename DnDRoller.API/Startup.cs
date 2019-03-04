@@ -1,17 +1,19 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.Swagger;
+using DnDRoller.API.Application.Mappers;
+using DnDRoller.API.Application.Services;
 using Microsoft.Extensions.Configuration;
+using DnDRoller.API.Application.Interfaces;
+using DnDRoller.API.Infrastructure.Contexts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using DnDRoller.API.Infrastructure.Contexts;
-using Swashbuckle.AspNetCore.Swagger;
-using DnDRoller.API.Application.Interfaces;
-using DnDRoller.API.Application.Services;
-using DnDRoller.API.Application.Mappers;
 
 namespace DnDRoller.API
 {
@@ -28,7 +30,6 @@ namespace DnDRoller.API
         public void ConfigureServices(IServiceCollection services)
         {
             var connection = "Server=tcp:pazzda.database.windows.net,1433;Initial Catalog=DnDRoller;Persist Security Info=False;User ID=jake.magill;Password=Chelsea18!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
-            var key = System.Text.Encoding.ASCII.GetBytes("This is a secret key that will be used");
             var mappingConfig = new MapperConfiguration(x => 
             {
                 x.AddProfile(new UserMapper());
@@ -40,21 +41,18 @@ namespace DnDRoller.API
             services.AddCors();
 
             //Adding Auth
-            services.AddAuthentication(x => 
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(x => 
-            {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key), 
-                    ValidateIssuer = false, 
-                    ValidateAudience = false
+                    ValidIssuer = Configuration["Jwt:Issuer"],
+                    ValidAudience = Configuration["Jwt:Issuer"],
+                    ClockSkew = TimeSpan.Zero,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
                 };
             });
 
@@ -64,13 +62,13 @@ namespace DnDRoller.API
                 x.SwaggerDoc("v1", new Info { Title = "DnDRoller API", Version = "v1" });
             });
 
-
             //Adding DbContext
             services.AddDbContext<DatabaseService>(options =>
                 options.UseSqlServer(connection, x => x.MigrationsAssembly("DnDRoller.API.Infrastructure")));
 
             services.AddSingleton(mapper);
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IDatabaseService, DatabaseService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

@@ -51,16 +51,17 @@ namespace DnDRoller.API.Controllers
             {
                 return BadRequest(new {message = "Username or Password incorrect"});
             }
-            
+
             return StatusCode(201, new {
-                returnUser.Id
+                returnUser.Id,
+                returnUser.token
             });
         }
 
         [HttpGet]
-        [AllowAnonymous]
+        [Authorize]
         [Route("[Action]")]
-        public async Task<IActionResult> Details([FromHeader]Guid id)
+        public async Task<IActionResult> Details([FromHeader]string username)
         {
             return StatusCode(200);
         }

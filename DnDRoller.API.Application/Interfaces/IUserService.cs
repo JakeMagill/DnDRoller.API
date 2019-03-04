@@ -10,6 +10,6 @@ namespace DnDRoller.API.Application.Interfaces
     public interface IUserService
     {
          Task<User> Create(UserDTO user);
-         Task<User> Authenticate(string username, string password);
+         Task<UserDTO> Authenticate(string username, string password);
     }
 }
