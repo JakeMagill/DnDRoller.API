@@ -6,6 +6,6 @@ namespace DnDRoller.API.Domain.Common
 {
     public interface IEnityBase
     {
-        void SetInitiallDefaults();
+        void SetDefaults();
     }
 }

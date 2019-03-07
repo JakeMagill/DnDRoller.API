@@ -17,7 +17,7 @@ namespace DnDRoller.API.Domain.Entities
 
         public bool IsDeleted { get; set; }
 
-        public void SetInitiallDefaults()
+        public void SetDefaults()
         {
             this.Id = Guid.NewGuid();
             this.CreatedBy = "SYSTEM";

@@ -20,15 +20,22 @@ namespace DnDRoller.API.Application.Services
 
         public async Task<string> CreateJWTToken(string userName)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            try
+            {
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
-              _config["Jwt:Issuer"],
-              expires: DateTime.Now.AddMinutes(2),
-              signingCredentials: creds);
+                var token = new JwtSecurityToken(_config["Jwt:Issuer"],
+                  _config["Jwt:Issuer"],
+                  expires: DateTime.Now.AddMinutes(2),
+                  signingCredentials: creds);
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+                return new JwtSecurityTokenHandler().WriteToken(token);
+            }
+            catch (Exception e)
+            {S
+                throw new Exception("Error creating JWT token", e);
+            }
         }
     }
 }

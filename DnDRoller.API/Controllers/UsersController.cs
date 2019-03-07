@@ -61,7 +61,7 @@ namespace DnDRoller.API.Controllers
         [HttpGet]
         [Authorize]
         [Route("[Action]")]
-        public async Task<IActionResult> Details([FromHeader]string username)
+        public async Task<IActionResult> Details([FromHeader]Guid id)
         {
             return StatusCode(200);
         }
@@ -71,7 +71,14 @@ namespace DnDRoller.API.Controllers
         [Route("[Action]")]
         public async Task<IActionResult> Delete([FromHeader]Guid id)
         {
-            return StatusCode(200);
+            var returnUser = await _userService.Delete(id);
+
+            if (returnUser == false)
+            {
+                return BadRequest(new { message = "User could not be removed" });
+            }
+
+            return StatusCode(202);
         }
 
         [HttpPut]
@@ -79,7 +86,14 @@ namespace DnDRoller.API.Controllers
         [Route("[Action]")]
         public async Task<IActionResult> Update([FromBody]UserDTO user)
         {
-            return StatusCode(200);
+            UserDTO returnUser = await _userService.Update(user);
+
+            if (returnUser == null)
+            {
+                return BadRequest(new { message = "User could not be updated" });
+            }
+
+            return StatusCode(202);
         }
     }
 }
