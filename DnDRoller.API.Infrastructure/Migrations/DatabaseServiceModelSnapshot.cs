@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DnDRoller.API.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseService))]
-    partial class UserContextModelSnapshot : ModelSnapshot
+    partial class DatabaseServiceModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -24,17 +24,38 @@ namespace DnDRoller.API.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Email");
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
 
-                    b.Property<string>("Firstname");
+                    b.Property<DateTime>("CreatedDate");
 
-                    b.Property<string>("Lastname");
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(50);
 
-                    b.Property<byte[]>("PasswordHash");
+                    b.Property<string>("Firstname")
+                        .IsRequired()
+                        .HasMaxLength(20);
 
-                    b.Property<byte[]>("PasswordSalt");
+                    b.Property<bool>("IsDeleted");
 
-                    b.Property<string>("Username");
+                    b.Property<string>("Lastname")
+                        .HasMaxLength(20);
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<DateTime>("ModifiedDate");
+
+                    b.Property<byte[]>("PasswordHash")
+                        .IsRequired();
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .IsRequired();
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.HasKey("Id");
 

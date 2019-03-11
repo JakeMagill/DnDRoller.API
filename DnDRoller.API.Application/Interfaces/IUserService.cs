@@ -13,5 +13,6 @@ namespace DnDRoller.API.Application.Interfaces
         Task<UserDTO> Authenticate(string username, string password);
         Task<bool> Delete(Guid id);
         Task<UserDTO> Update(UserDTO user);
+        Task<UserDTO> Details(Guid id);
     }
 }

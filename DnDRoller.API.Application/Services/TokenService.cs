@@ -27,13 +27,13 @@ namespace DnDRoller.API.Application.Services
 
                 var token = new JwtSecurityToken(_config["Jwt:Issuer"],
                   _config["Jwt:Issuer"],
-                  expires: DateTime.Now.AddMinutes(2),
+                  expires: DateTime.Now.AddMinutes(10),
                   signingCredentials: creds);
 
                 return new JwtSecurityTokenHandler().WriteToken(token);
             }
             catch (Exception e)
-            {S
+            {
                 throw new Exception("Error creating JWT token", e);
             }
         }

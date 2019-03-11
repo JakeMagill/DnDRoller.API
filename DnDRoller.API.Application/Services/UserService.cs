@@ -27,16 +27,18 @@ namespace DnDRoller.API.Application.Services
         {
             try
             {
-                User user = _databaseService.Users.Where(u => u.Username.Equals(username)).Single();
+                User user = _databaseService.Users
+                    .Where(u => (u.Username.Equals(username)) && (u.IsDeleted == false))
+                    .Single();
 
                 if (user == null)
                 {
-                    throw new Exception("User does not exist");
+                    throw new Exception();
                 }
 
                 if (!HashHelper.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
                 {
-                    throw new Exception("Password is incorrect");
+                    throw new Exception();
                 }
 
                 UserDTO returnUser = _mapper.Map<UserDTO>(user);
@@ -48,7 +50,6 @@ namespace DnDRoller.API.Application.Services
             catch (Exception e)
             {
                 throw new Exception("User could not be authenticated: " + e);
-
             }
         }
 
@@ -73,9 +74,9 @@ namespace DnDRoller.API.Application.Services
 
                 return dto;
             }
-            catch
+            catch (Exception e)
             {
-                throw new Exception("User could not be created due to an error");
+                throw new Exception("User could not be created due to an error", e);
             }
         }
 
@@ -83,14 +84,13 @@ namespace DnDRoller.API.Application.Services
         {
             try
             {
-                var user = await _databaseService.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
+                User userFromDb = await _databaseService.Users
+                    .Where(x => (x.Id == id) && (x.IsDeleted == false))
+                    .SingleAsync();
 
-                if (user == null)
-                {
-                    return false;
-                }
+                userFromDb.IsDeleted = true;
 
-                _databaseService.Users.Remove(user);
+                await Task.Run(() => _databaseService.Users.Update(userFromDb));
                 _databaseService.Save();
 
                 return true;
@@ -101,11 +101,36 @@ namespace DnDRoller.API.Application.Services
             }
         }
 
+        public async Task<UserDTO> Details(Guid id)
+        {
+            try
+            { 
+                User user = await _databaseService.Users
+                    .Where(x => (x.Id == id) && (x.IsDeleted == false))
+                    .FirstOrDefaultAsync();
+
+                if (user == null)
+                {
+                    throw new ArgumentNullException();
+                }
+
+                UserDTO returnUser = _mapper.Map<UserDTO>(user);
+
+                return returnUser;
+            }
+            catch (ArgumentNullException e)
+            {
+                throw new ArgumentNullException("Error retrieving user details", e);
+            }
+        }
+
         public async Task<UserDTO> Update(UserDTO dto)
         {
             try
             {
-                User userFromDb = await _databaseService.Users.Where(x => x.Id == dto.Id).SingleAsync();
+                User userFromDb = await _databaseService.Users
+                    .Where(x => (x.Id == dto.Id) && (x.IsDeleted == false))
+                    .SingleAsync();
 
                 userFromDb.Firstname = dto.Firstname;
                 userFromDb.Lastname = dto.Lastname;

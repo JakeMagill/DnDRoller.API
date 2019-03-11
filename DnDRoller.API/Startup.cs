@@ -29,7 +29,10 @@ namespace DnDRoller.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connection = "Server=tcp:pazzda.database.windows.net,1433;Initial Catalog=DnDRoller;Persist Security Info=False;User ID=jake.magill;Password=Chelsea18!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+
+            //var connection = "Server=tcp:pazzda.database.windows.net,1433;Initial Catalog=DnDRoller;Persist Security Info=False;User ID=jake.magill;Password=Chelsea18!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            var connection = "Server=DESKTOP-SPP8Q0J; Database=DnDRoller; Trusted_Connection=true";
+
             var mappingConfig = new MapperConfiguration(x => 
             {
                 x.AddProfile(new UserMapper());

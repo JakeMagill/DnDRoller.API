@@ -63,11 +63,18 @@ namespace DnDRoller.API.Controllers
         [Route("[Action]")]
         public async Task<IActionResult> Details([FromHeader]Guid id)
         {
-            return StatusCode(200);
+            var returnUser = await _userService.Details(id);
+
+            if (returnUser == null)
+            {
+                return BadRequest(new { message = "User details could not be retrieved" });
+            }
+
+            return StatusCode(200, returnUser);
         }
 
         [HttpDelete]
-        [AllowAnonymous]
+        [Authorize]
         [Route("[Action]")]
         public async Task<IActionResult> Delete([FromHeader]Guid id)
         {
@@ -82,7 +89,7 @@ namespace DnDRoller.API.Controllers
         }
 
         [HttpPut]
-        [AllowAnonymous]
+        [Authorize]
         [Route("[Action]")]
         public async Task<IActionResult> Update([FromBody]UserDTO user)
         {

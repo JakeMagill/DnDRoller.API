@@ -16,6 +16,11 @@ namespace DnDRoller.API.Infrastructure.Contexts
         {
             this.SaveChanges();
         }
+            
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(DatabaseService).Assembly);
+        }
     }
 
 }
